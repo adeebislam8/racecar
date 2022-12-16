@@ -28,7 +28,7 @@ class saveHectorPath:
         self.path = msg
         # self.path_pub.publish(self.path)
         for pose in self.path.poses:
-            self.path_file.write(str(pose.pose.position.x) + " " + str(pose.pose.position.y) + " " + str(pose.pose.orientation.w) + "\n"  ) 
+            self.path_file.write(str(pose.pose.position.x) + " " + str(pose.pose.position.y) + " " +  str(pose.pose.orientation.x) + " " + str(pose.pose.orientation.y) + " " +str(pose.pose.orientation.z) + " " +str(pose.pose.orientation.w) + "\n"  ) 
 
 if __name__ == '__main__':
     rospy.init_node('saveHectorPath', anonymous=True)

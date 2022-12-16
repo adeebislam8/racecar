@@ -54,15 +54,15 @@ class loadWaypoint:
             pose.pose.position.x = float(line[0])
             pose.pose.position.y = float(line[1])
             pose.pose.position.z = 0
-            pose.pose.orientation.x = 0
-            pose.pose.orientation.y = 0
-            pose.pose.orientation.z = 0
-            pose.pose.orientation.w = float(line[2])
+            pose.pose.orientation.x = float(line[2])
+            pose.pose.orientation.y = float(line[3])
+            pose.pose.orientation.z = float(line[4])
+            pose.pose.orientation.w = float(line[5])
             print(pose.pose.position)
             self.path.poses.append(pose)
 
         # post process self.path.posses to make it sparse
-        self.path.poses = self.path.poses[::50]
+        self.path.poses = self.path.poses[::100]
         self.x_list = []
         self.y_list = []
         for i in range(len(self.path.poses)):
@@ -93,9 +93,9 @@ class loadWaypoint:
         msg.pose.position.x = goal.pose.position.x
         msg.pose.position.y = goal.pose.position.y
         msg.pose.position.z = 0
-        msg.pose.orientation.x = 0
-        msg.pose.orientation.y = 0
-        msg.pose.orientation.z = 0
+        msg.pose.orientation.x = goal.pose.orientation.x
+        msg.pose.orientation.y = goal.pose.orientation.y
+        msg.pose.orientation.z = goal.pose.orientation.z
         msg.pose.orientation.w = goal.pose.orientation.w
         # print("publish2DNavigationGoal", msg.pose.position.x, msg.pose.position.y, msg.pose.orientation.w)
         # print(msg)
@@ -194,8 +194,11 @@ if __name__ == '__main__':
         near_dist, near_idx = loadWaypoint.find_nearest_point(loadWaypoint.ego_odom.pose.pose.position.x, loadWaypoint.ego_odom.pose.pose.position.y, loadWaypoint.x_list, loadWaypoint.y_list)
         print("near_dist, ",near_dist, " near_idx, ",near_idx)
         # print("car_start ", loadWaypoint.car_start)
+        pointahead = math.atan2(loadWaypoint.path.poses[near_idx].pose.position.y - loadWaypoint.ego_odom.pose.pose.position.y, loadWaypoint.path.poses[near_idx].pose.position.x - loadWaypoint.ego_odom.pose.pose.position.x)
+        print("pointahead ", pointahead)
+        # if near_dist > 0.0:
         if near_idx + 2 >= len(loadWaypoint.x_list):
-            near_idx = near_idx + 1 - len(loadWaypoint.x_list)
+            near_idx = near_idx - len(loadWaypoint.x_list)
             
         elif near_idx < 0:
             near_idx = len(loadWaypoint.x_list) + near_idx - 1
