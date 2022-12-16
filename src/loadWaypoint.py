@@ -17,6 +17,7 @@ from visualization_msgs.msg import MarkerArray
 from nav_msgs.msg import Odometry
 from move_base_msgs.msg import MoveBaseActionGoal
 from actionlib_msgs.msg import GoalID
+import tf
 
 class loadWaypoint:
     def __init__(self):
@@ -62,7 +63,7 @@ class loadWaypoint:
             self.path.poses.append(pose)
 
         # post process self.path.posses to make it sparse
-        self.path.poses = self.path.poses[::100]
+        # self.path.poses = self.path.poses[::100]
         self.x_list = []
         self.y_list = []
         for i in range(len(self.path.poses)):
@@ -192,22 +193,41 @@ if __name__ == '__main__':
     while not rospy.is_shutdown(): 
         loadWaypoint.publishPath()
         near_dist, near_idx = loadWaypoint.find_nearest_point(loadWaypoint.ego_odom.pose.pose.position.x, loadWaypoint.ego_odom.pose.pose.position.y, loadWaypoint.x_list, loadWaypoint.y_list)
-        print("near_dist, ",near_dist, " near_idx, ",near_idx)
+        # print("\nnear_dist, ",near_dist, " near_idx, ",near_idx)
         # print("car_start ", loadWaypoint.car_start)
-        pointahead = math.atan2(loadWaypoint.path.poses[near_idx].pose.position.y - loadWaypoint.ego_odom.pose.pose.position.y, loadWaypoint.path.poses[near_idx].pose.position.x - loadWaypoint.ego_odom.pose.pose.position.x)
-        print("pointahead ", pointahead)
+        pointahead_angle = math.atan2(loadWaypoint.path.poses[near_idx].pose.position.y - loadWaypoint.ego_odom.pose.pose.position.y, loadWaypoint.path.poses[near_idx].pose.position.x - loadWaypoint.ego_odom.pose.pose.position.x)
+        # print("pointahead ", pointahead)
+        near_quaternion = loadWaypoint.path.poses[near_idx].pose.orientation
+        near_euler = tf.transformations.euler_from_quaternion([near_quaternion.x, near_quaternion.y, near_quaternion.z, near_quaternion.w])
+        near_yaw = near_euler[2]
+
+        ego_quaternion = loadWaypoint.ego_odom.pose.pose.orientation
+        ego_euler = tf.transformations.euler_from_quaternion([ego_quaternion.x, ego_quaternion.y, ego_quaternion.z, ego_quaternion.w])
+        ego_yaw = ego_euler[2]
+        # print("near_yaw, ",near_yaw, " ego_yaw, ",ego_yaw)
+
+        if (pointahead_angle - ego_yaw <= math.pi/2) and (pointahead_angle - ego_yaw >= -math.pi/2):
+            pointahead = 1
+            print("pointahead = 1")
+        else:
+            pointahead = 0
+            print("pointahead = 0")
+        # ego_behind_point_ahead = pointahead < 0
         # if near_dist > 0.0:
         if near_idx + 2 >= len(loadWaypoint.x_list):
+            print("next lap")
             near_idx = near_idx - len(loadWaypoint.x_list)
             
         elif near_idx < 0:
             near_idx = len(loadWaypoint.x_list) + near_idx - 1
+            print("near_idx < 0")
 
         if not loadWaypoint.car_start:
             loadWaypoint.publish2DNavigationGoal(loadWaypoint.path.poses[near_idx])
             loadWaypoint.car_start = True
         else:
-            if near_dist < 0.3:
+            if near_dist < 1.0 and pointahead:
+                print("publish goal")
                 loadWaypoint.publish2DNavigationGoal(loadWaypoint.path.poses[near_idx+1])
 
 
