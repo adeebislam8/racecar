@@ -208,26 +208,27 @@ if __name__ == '__main__':
 
         if (pointahead_angle - ego_yaw <= math.pi/2) and (pointahead_angle - ego_yaw >= -math.pi/2):
             pointahead = 1
-            print("pointahead = 1")
+            # print("pointahead = 1")
         else:
             pointahead = 0
-            print("pointahead = 0")
+            # print("pointahead = 0")
         # ego_behind_point_ahead = pointahead < 0
         # if near_dist > 0.0:
         if near_idx + 2 >= len(loadWaypoint.x_list):
-            print("next lap")
+            # print("next lap")
             near_idx = near_idx - len(loadWaypoint.x_list)
             
         elif near_idx < 0:
             near_idx = len(loadWaypoint.x_list) + near_idx - 1
-            print("near_idx < 0")
+            # print("near_idx < 0")
 
+        print("near_dist, ",near_dist, " near_idx, ",near_idx, " pointahead ", pointahead)
         if not loadWaypoint.car_start:
             loadWaypoint.publish2DNavigationGoal(loadWaypoint.path.poses[near_idx])
             loadWaypoint.car_start = True
         else:
-            if near_dist < 1.0 and pointahead:
-                print("publish goal")
+            if near_dist < 1.5 and pointahead:
+                # print("publish goal")
                 loadWaypoint.publish2DNavigationGoal(loadWaypoint.path.poses[near_idx+1])
 
 

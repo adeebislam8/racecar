@@ -120,18 +120,20 @@
 	  </node> 
 
 <!-- MOVEMENT -->
-  <!-- <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find racecar)/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
     <rosparam file="$(find racecar)/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find racecar)/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find racecar)/global_costmap_params.yaml" command="load" /> 
     <rosparam file="$(find racecar)/base_local_planner_params.yaml" command="load" />
-    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
-    <param name="controller_frequency" value="10.0" />
-  </node> -->
+    <!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" /> -->
+    <!-- <param name="controller_frequency" value="10.0" /> -->
+  </node>
 
         <!--  ************** Navigation TEB ***************  -->
-	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+		
+	<!-- <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
   	  	<rosparam file="$(find racecar)/carlike/costmap_common_params.yaml" command="load" ns="global_costmap" />
   	 	<rosparam file="$(find racecar)/carlike/costmap_common_params.yaml" command="load" ns="local_costmap" />
   		<rosparam file="$(find racecar)/carlike/local_costmap_params.yaml" command="load" />
@@ -144,10 +146,10 @@
 
 		<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
 		<param name="controller_frequency" value="5.0" />
-		<param name="controller_patience" value="15.0" />
+		<param name="controller_patience" value="15.0" /> -->
 
-    <param name="clearing_rotation_allowed" value="false" /> <!-- Our carlike robot is not able to rotate in place -->
-	</node>
+    <!-- <param name="clearing_rotation_allowed" value="false" /> Our carlike robot is not able to rotate in place -->
+	<!-- </node> -->
 
   
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find racecar)/rviz_config.rviz" />
